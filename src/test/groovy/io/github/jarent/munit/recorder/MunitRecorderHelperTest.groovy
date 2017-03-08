@@ -48,6 +48,22 @@ class MunitRecorderHelperTest  extends Specification {
 		
 	}
 	
+	public void shouldRecognizeNamespaceAndElementNameFromFile() {
+		when:
+		
+		def mpFileLine = 13
+		
+		def mpFileName = "test-config.xml"
+			
+		def elementNameAndNamespace =	MunitRecorderHelper.getElementNameAndNamespaceFromFile(mpFileLine, mpFileName)
+			
+		then:
+		
+		elementNameAndNamespace.namespace == 'munit'
+		elementNameAndNamespace.name== 'set'
+		
+	}
+	
 	@Test
 	public void shouldRecongizeElementName() {
 		when:

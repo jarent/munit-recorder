@@ -25,7 +25,7 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 				
 				MessageProcessorInfo mpInfo = new MessageProcessorInfoBuilder()
 													  .fromMessageProcessor(mpNotification.getProcessor())
-													  .withPayload(mpNotification.getSource().getMessage().getPayloadForLogging())
+													  .withPayload(mpNotification.getSource().getMessage().getPayload())
 													  .withVariables(getVariables(mpNotification.getSource()))
 													  .build()					
 				
@@ -36,8 +36,6 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 					def logMethodName = mpNotification.getSource().getMuleContext().getRegistry().get("munit.recorder.logMethod") ?: "logXML"
 					
 					def logMethod = MessageProcessorInfoLoggers.&"$logMethodName"
-					
-					recorderLog.error("Invalid munit.recorder.logMethod name: '$logMethodName'. Valid methods: " + MessageProcessorInfoLoggers.metaClass.methods*.name)
 					
 					recorderLog.info(logMethod(mpInfo))
 					

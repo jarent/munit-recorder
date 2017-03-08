@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration" mock-connectors="false" mock-inbounds="false"/>
+    <spring:beans>
+        <spring:import resource="classpath:navis-sfdc-demo.xml"/>
+    </spring:beans>
+    <munit:test name="new-test-suite-navis-sfdc-demoFlowTest" description="Test">
+        <munit:set payload="#[]" doc:name="Set Message">
+            <munit:inbound-properties>
+                <munit:inbound-property key="http.query.params" value="['caseNumber':'00001026']"/>
+            </munit:inbound-properties>
+        </munit:set>
+        <flow-ref name="navis-sfdc-demoFlow" doc:name="Flow-ref to navis-sfdc-demoFlow"/>
+        <sfdc:query-single config-ref="Salesforce__Basic_authentication" query="dsql:SELECT CaseNumber,leadcalled__Navis_Case_Description__c,leadcalled__Navis_Case_Id__c FROM Case WHERE CaseNumber = '#[flowVars.requestedCaseNumber]'" doc:name="Get Case Details"/>
+        <logger level="ERROR" message="#[payload]" doc:name="Logger"/>
+    </munit:test>
+</mule>

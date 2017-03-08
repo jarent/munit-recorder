@@ -53,6 +53,13 @@ class MunitRecorderHelper {
 		return getElementNameAndNamespace(mpSourceElement)
 	}
 	
+	public static Map getElementNameAndNamespaceFromFile(int mpFileLine, String mpFileName) {
+		
+	def mpSourceElement =  this.getClass().getResource("/" + mpFileName).text.readLines()[mpFileLine-1]
+	
+	return getElementNameAndNamespace(mpSourceElement)
+}
+	
 	public static List getVariables(MuleEvent event) {
 		return event.getFlowVariableNames().collect {
 			

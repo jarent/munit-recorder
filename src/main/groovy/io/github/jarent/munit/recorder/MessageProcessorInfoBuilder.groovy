@@ -21,7 +21,7 @@ class MessageProcessorInfoBuilder {
 			FlowConstructAware fcAware = mp
 			fillMessageProcessorInfo(fcAware)
 		} else {
-			throw new IllegalStateException("No annotations - " + mpNotification.getProcessor().getClass().getName());
+			throw new IllegalStateException("No annotations - " + mp.getClass().getName());
 		}
 		return this
 	}
@@ -63,7 +63,7 @@ class MessageProcessorInfoBuilder {
 	private void fillMessageProcessorInfo(FlowConstructAware fcAware) {
 		mpInfo.docName = fcAware?.'CGLIB$CALLBACK_0'.getAttributes().'doc:name'			
 					
-		def elementNameAndNamespace = getElementNameAndNamespaceFromFlow(fcAware?.'CGLIB$CALLBACK_0'.lineNumber as Integer, fcAware.flowConstruct.getAnnotations())
+		def elementNameAndNamespace = getElementNameAndNamespaceFromFile(fcAware?.'CGLIB$CALLBACK_0'.lineNumber as Integer, fcAware?.'CGLIB$CALLBACK_0'.fileName )
 		
 		mpInfo.elementNamespace = elementNameAndNamespace.namespace
 		mpInfo.elementName = elementNameAndNamespace.name
