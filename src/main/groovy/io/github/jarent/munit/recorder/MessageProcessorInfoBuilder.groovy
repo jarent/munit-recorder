@@ -17,22 +17,17 @@ class MessageProcessorInfoBuilder {
 	
 	public MessageProcessorInfoBuilder fromMessageProcessor(def mp) {		
 		if (mp instanceof AnnotatedObject && mp.getAnnotations().size() > 0) {
-			fillMessageProcessorInfo((AnnotatedObject)mp)
-		} else if (mp instanceof FlowConstructAware) {
-			FlowConstructAware fcAware = mp
-			if (fcAware.'CGLIB$CALLBACK_0' != null) {
-				if (fcAware.'CGLIB$CALLBACK_0' instanceof WrapperMunitMessageProcessorInterceptor) {
-					return fromMessageProcessor(fcAware.'CGLIB$CALLBACK_0'.realMp)
-				} else if (fcAware.'CGLIB$CALLBACK_0' instanceof MunitMessageProcessorInterceptor) {
-					fillMessageProcessorInfo(fcAware)
-				} else  {
-					throw new IllegalStateException("Unexpected CGLIB$CALLBACK_0 class: " + fcAware.'CGLIB$CALLBACK_0'.getClass().getName());
-				}
-			} else {
-				throw new IllegalStateException("No CGLIB$CALLBACK_0 - munit record works only in Munit test");
-			}
+			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
+		} else if (mp.'CGLIB$CALLBACK_0' != null) {
+			if (mp.'CGLIB$CALLBACK_0' instanceof WrapperMunitMessageProcessorInterceptor) {
+				return fromMessageProcessor(mp.'CGLIB$CALLBACK_0'.realMp)
+			} else if (mp.'CGLIB$CALLBACK_0' instanceof MunitMessageProcessorInterceptor) {
+				fillMessageProcessorInfoFromCallback(mp)
+			} else  {
+				throw new IllegalStateException("Unexpected CGLIB$CALLBACK_0 class: " + fcAware.'CGLIB$CALLBACK_0'.getClass().getName());
+			}			
 		} else {
-			throw new IllegalStateException("No annotations - " + mp.getClass().getName());
+			throw new IllegalStateException("No annotations nor CGLIB$CALLBACK_0 - " + mp.getClass().getName());
 		}
 		return this
 	}
@@ -53,7 +48,7 @@ class MessageProcessorInfoBuilder {
 	
 	
 	
-	private void fillMessageProcessorInfo(AnnotatedObject annoted) {
+	private void fillMessageProcessorInfoFromAnnotations(AnnotatedObject annoted) {
 		mpInfo.docName = annoted.getAnnotations()[DOC_NAME];
 		
 		String sourceElement = annoted.getAnnotations()[SOURCE_ELEMENT].toString();
@@ -71,10 +66,10 @@ class MessageProcessorInfoBuilder {
 		}
 	}
 	
-	private void fillMessageProcessorInfo(FlowConstructAware fcAware) {
-		mpInfo.docName = fcAware?.'CGLIB$CALLBACK_0'.getAttributes().'doc:name'		
+	private void fillMessageProcessorInfoFromCallback(def mp) {
+		mpInfo.docName = mp?.'CGLIB$CALLBACK_0'.getAttributes().'doc:name'		
 					
-		def elementNameAndNamespace = getElementNameAndNamespaceFromFile(fcAware?.'CGLIB$CALLBACK_0'.'lineNumber' as Integer, fcAware?.'CGLIB$CALLBACK_0'.getFileName() )
+		def elementNameAndNamespace = getElementNameAndNamespaceFromFile(mp?.'CGLIB$CALLBACK_0'.'lineNumber' as Integer, mp?.'CGLIB$CALLBACK_0'.getFileName() )
 		
 		mpInfo.elementNamespace = elementNameAndNamespace.namespace
 		mpInfo.elementName = elementNameAndNamespace.name
