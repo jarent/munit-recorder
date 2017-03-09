@@ -1,11 +1,14 @@
 package io.github.jarent.munit.recorder
 
 import groovy.json.JsonBuilder
+import org.mule.transport.NullPayload
 
 class MessageProcessorInfoLoggers {
 	
 	public static String serializeToScript(payload) {
-		if (payload instanceof String || payload instanceof Number) {
+		if (payload instanceof NullPayload) {
+			return "return null"
+		} else if (payload instanceof String || payload instanceof Number) {
 			def inspectedPayload = payload.inspect()
 			return "return $inspectedPayload"
 		} else {

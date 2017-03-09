@@ -16,6 +16,12 @@
 	</properties>
 	<dependencies>	
 	   <dependency>
+            <groupId>com.mulesoft.munit</groupId>
+            <artifactId>munit-runner</artifactId>
+            <version>${munit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+	   <dependency>
 		   <groupId>com.mulesoft.munit</groupId>
 		    <artifactId>mule-munit-support</artifactId>
 		    <version>${mule.munit.support.version}</version>
