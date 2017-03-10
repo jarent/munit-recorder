@@ -41,6 +41,8 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 					
 				}
 				
+		} catch (UnsupportedOperationException e) {
+			recorderLog.warn(e.getMessage())
 		} catch (Exception e) {
 			recorderLog.error("MunitRecorder Error", e);
 		}

@@ -2,10 +2,8 @@ package io.github.jarent.munit.recorder
 
 import static io.github.jarent.munit.recorder.MunitRecorderHelper.*
 
-import java.util.Map
-
 import org.mule.api.AnnotatedObject
-import org.mule.api.construct.FlowConstructAware
+import org.mule.module.extension.internal.runtime.processor.OperationMessageProcessor
 import org.mule.munit.common.processor.interceptor.MunitMessageProcessorInterceptor
 import org.mule.munit.common.processor.interceptor.WrapperMunitMessageProcessorInterceptor
 
@@ -16,18 +14,20 @@ class MessageProcessorInfoBuilder {
 	
 	
 	public MessageProcessorInfoBuilder fromMessageProcessor(def mp) {		
-		if (mp instanceof AnnotatedObject && mp.getAnnotations().size() > 0) {
-			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
-		} else if (mp.'CGLIB$CALLBACK_0' != null) {
+		if (mp.hasProperty('CGLIB$CALLBACK_0')) {
 			if (mp.'CGLIB$CALLBACK_0' instanceof WrapperMunitMessageProcessorInterceptor) {
 				return fromMessageProcessor(mp.'CGLIB$CALLBACK_0'.realMp)
 			} else if (mp.'CGLIB$CALLBACK_0' instanceof MunitMessageProcessorInterceptor) {
 				fillMessageProcessorInfoFromCallback(mp)
 			} else  {
-				throw new IllegalStateException("Unexpected CGLIB$CALLBACK_0 class: " + fcAware.'CGLIB$CALLBACK_0'.getClass().getName());
+				throw new IllegalStateException("Unexpected CGLIB$CALLBACK_0 class: " + mp.'CGLIB$CALLBACK_0'.getClass().getName());
 			}			
+		} else if (mp instanceof AnnotatedObject && mp?.getAnnotations().size() > 0) {
+			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
+		} else if (mp instanceof OperationMessageProcessor) {
+			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName());
 		} else {
-			throw new IllegalStateException("No annotations nor CGLIB$CALLBACK_0 - " + mp.getClass().getName());
+			throw new IllegalStateException('No annotations nor CGLIB$CALLBACK_0 - ' + mp.getClass().getName());
 		}
 		return this
 	}
