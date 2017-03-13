@@ -4,8 +4,10 @@ import static io.github.jarent.munit.recorder.MunitRecorderHelper.*
 
 import org.mule.api.AnnotatedObject
 import org.mule.module.extension.internal.runtime.processor.OperationMessageProcessor
+import org.mule.munit.common.endpoint.MockOutboundEndpoint
 import org.mule.munit.common.processor.interceptor.MunitMessageProcessorInterceptor
 import org.mule.munit.common.processor.interceptor.WrapperMunitMessageProcessorInterceptor
+import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper
 
 
 class MessageProcessorInfoBuilder {
@@ -24,7 +26,9 @@ class MessageProcessorInfoBuilder {
 			}			
 		} else if (mp instanceof AnnotatedObject && mp?.getAnnotations().size() > 0) {
 			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
-		} else if (mp instanceof OperationMessageProcessor) {
+		} else if (mp instanceof OperationMessageProcessor || mp instanceof SubflowInterceptingChainLifecycleWrapper || mp instanceof MockOutboundEndpoint ) {
+			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName())
+		} else if (mp.getClass().getName().contains("org.mule.config.spring.factories.FlowRefFactoryBean") ) {
 			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName())
 		} else {
 			throw new IllegalStateException('No annotations nor CGLIB$CALLBACK_0 - ' + mp.getClass().getName());
