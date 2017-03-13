@@ -2,7 +2,9 @@ package io.github.jarent.munit.recorder
 
 import org.junit.Test
 
-import static io.github.jarent.munit.recorder.MessageProcessorInfoLoggers.*;
+import static io.github.jarent.munit.recorder.MessageProcessorInfoLoggers.*
+
+
 import spock.lang.Specification;
 
 class MessageProcessorInfoLoggersTest  extends Specification {
@@ -19,9 +21,12 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		mpInfo.variables = [['name':'var', 'value':'test']]
 		
 		then:
-		logJSON(mpInfo) == '{"docName":"Test Name","elementName":"request","elementNamespace":"http","variables":[{"name":"var","value":"test"}],"payload":"Sample payload"}'
+		
+		logJSON(mpInfo) == '{"docName":"Test Name","elementName":"request","exceptionThrown":null,"elementNamespace":"http","variables":[{"name":"var","value":"test"}],"payload":"Sample payload"}'
 		
 	}
+	
+	
 	
 	@Test
 	public void shouldLogGroovy() {
@@ -73,6 +78,23 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 </mock:when>
 
 <<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
+	}
+	
+	@Test
+	public void shouldLogXMLForExceptionThrown() {
+		when:
+		MessageProcessorInfo mpInfo = new MessageProcessorInfo()
+		
+		mpInfo.docName = "Test Name"
+		mpInfo.elementName = "request"
+		mpInfo.elementNamespace = "http"
+		mpInfo.payload = "Sample payload"
+		mpInfo.exceptionThrown = new IllegalStateException("Exception with the message")
+		
+		then:
+		
+		System.err.println logXML(mpInfo)
+		
 	}
 
 }

@@ -1,10 +1,12 @@
 package io.github.jarent.munit.recorder
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonParserType
-import groovy.json.JsonSlurper
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
+import com.cedarsoftware.util.io.GroovyJsonReader
+
+import groovy.ui.text.FindReplaceUtility.ReplaceAllAction
+
 
 class PayloadSerializerTest extends Specification {
 	
@@ -56,7 +58,95 @@ class PayloadSerializerTest extends Specification {
 		result.date.getDateString() == payload.date.getDateString() 
 	}
 	
+	def "Should Serialize Exception"() {
+		given:
+		def exception = new IllegalStateException("Exception with the message")
+		
+		when:
+		//String script = GroovyJsonWriter.objectToJson(exception)
+		//def obj = GroovyJsonReader.jsonToGroovy(script)
+		
+		String script = MessageProcessorInfoLoggers.serializeToScript(exception)
+		
+		def result = Eval.me(script)
+		
+		then:
+		exception.getClass().getName() == result.getClass().getName()
+		exception.getMessage() == result.getMessage()
+	}
 	
+	@Ignore
+	def "Should Deserialize Complex Exception"() {
+		given:
+		String json = '''
+{  
+   "@type":"org.mule.api.MessagingException",
+   "causeRollback":false,
+   "handled":false,
+   "info":{  
+      "@type":"java.util.HashMap",
+      "Element":"/navis-sfdc-demoFlow/processors/5 @ e94f3420-06ec-11e7-98a1-d25e667d54c4"
+   },
+   "errorCode":-1,
+   "message":"Json content is not compliant with schema\ncom.github.fge.jsonschema.core.report.ListProcessingReport: failure\n--- BEGIN MESSAGES ---\nerror: object has missing required properties ([\"NavisCase2\"])\n    level: \"error\"\n    schema: {\"loadingURI\":\"file:/Users/jacek/workspace/navis-sfdc-demo/target/classes/NavisCase.json#\",\"pointer\":\"\"}\n    instance: {\"pointer\":\"\"}\n    domain: \"validation\"\n    keyword: \"required\"\n    required: [\"NavisCase2\"]\n    missing: [\"NavisCase2\"]\n---  END MESSAGES  ---\n (org.mule.module.json.validation.JsonSchemaValidationException).",
+   "i18nMessage":{  
+      "message":"Json content is not compliant with schema\ncom.github.fge.jsonschema.core.report.ListProcessingReport: failure\n--- BEGIN MESSAGES ---\nerror: object has missing required properties ([\"NavisCase2\"])\n    level: \"error\"\n    schema: {\"loadingURI\":\"file:/Users/jacek/workspace/navis-sfdc-demo/target/classes/NavisCase.json#\",\"pointer\":\"\"}\n    instance: {\"pointer\":\"\"}\n    domain: \"validation\"\n    keyword: \"required\"\n    required: [\"NavisCase2\"]\n    missing: [\"NavisCase2\"]\n---  END MESSAGES  ---\n (org.mule.module.json.validation.JsonSchemaValidationException)",
+      "code":-1,
+      "args":{  
+         "@id":4,
+         "@items":[  
+
+         ]
+      },
+      "nextMessage":null
+   },
+   "detailMessage":"org.mule.module.json.validation.JsonSchemaValidationException: Json content is not compliant with schema\ncom.github.fge.jsonschema.core.report.ListProcessingReport: failure\n--- BEGIN MESSAGES ---\nerror: object has missing required properties ([\"NavisCase2\"])\n    level: \"error\"\n    schema: {\"loadingURI\":\"file:/Users/jacek/workspace/navis-sfdc-demo/target/classes/NavisCase.json#\",\"pointer\":\"\"}\n    instance: {\"pointer\":\"\"}\n    domain: \"validation\"\n    keyword: \"required\"\n    required: [\"NavisCase2\"]\n    missing: [\"NavisCase2\"]\n---  END MESSAGES  ---\n",
+   "cause":{  
+      "@id":3,
+      "@type":"org.mule.module.json.validation.JsonSchemaValidationException",
+      "invalidJson":"{\"NavisCase\":{\"Id\":\"00001026\",\"Desc\":\"Wait for update on network status\",\"NavisId\":\"123.0\"}}",
+      "info":{  
+         "@type":"java.util.HashMap"
+      },
+      "errorCode":-1,
+      "message":"Json content is not compliant with schema\ncom.github.fge.jsonschema.core.report.ListProcessingReport: failure\n--- BEGIN MESSAGES ---\nerror: object has missing required properties ([\"NavisCase2\"])\n    level: \"error\"\n    schema: {\"loadingURI\":\"file:/Users/jacek/workspace/navis-sfdc-demo/target/classes/NavisCase.json#\",\"pointer\":\"\"}\n    instance: {\"pointer\":\"\"}\n    domain: \"validation\"\n    keyword: \"required\"\n    required: [\"NavisCase2\"]\n    missing: [\"NavisCase2\"]\n---  END MESSAGES  ---\n",
+      "i18nMessage":{  
+         "message":"Json content is not compliant with schema\ncom.github.fge.jsonschema.core.report.ListProcessingReport: failure\n--- BEGIN MESSAGES ---\nerror: object has missing required properties ([\"NavisCase2\"])\n    level: \"error\"\n    schema: {\"loadingURI\":\"file:/Users/jacek/workspace/navis-sfdc-demo/target/classes/NavisCase.json#\",\"pointer\":\"\"}\n    instance: {\"pointer\":\"\"}\n    domain: \"validation\"\n    keyword: \"required\"\n    required: [\"NavisCase2\"]\n    missing: [\"NavisCase2\"]\n---  END MESSAGES  ---\n",
+         "code":-1,
+         "args":{  
+            "@ref":4
+         },
+         "nextMessage":null
+      },
+      "detailMessage":null,
+      "cause":{  
+         "@ref":3
+      },
+      "stackTrace":{  
+         "@id":2,
+         "@items":[  
+
+         ]
+      },
+      "suppressedExceptions":{  
+         "@id":1,
+         "@type":"java.util.Collections$UnmodifiableRandomAccessList"
+      }
+   },
+   "stackTrace":{  
+      "@ref":2
+   },
+   "suppressedExceptions":{  
+      "@ref":1
+   }
+}
+'''
+		when:
+		def result = GroovyJsonReader.jsonToGroovy(json)
+		
+		then:
+		System.err.println result
+	}
 	
 
 }

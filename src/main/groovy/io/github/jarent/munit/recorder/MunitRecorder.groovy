@@ -27,6 +27,7 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 													  .fromMessageProcessor(mpNotification.getProcessor())
 													  .withPayload(mpNotification.getSource().getMessage().getPayload())
 													  .withVariables(getVariables(mpNotification.getSource()))
+													  .withExceptionThrown(mpNotification.exceptionThrown)
 													  .build()					
 				
 				if (mpNotification.action == 									  

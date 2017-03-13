@@ -5,5 +5,6 @@ import java.util.List;
 public class MessageProcessorInfo {
 		String elementNamespace, elementName, docName
 		Object payload
-		List variables;
+		List variables
+		Throwable exceptionThrown
 }

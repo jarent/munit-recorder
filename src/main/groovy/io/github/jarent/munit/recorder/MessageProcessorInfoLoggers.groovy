@@ -1,7 +1,10 @@
 package io.github.jarent.munit.recorder
 
 import groovy.json.JsonBuilder
+import org.mule.api.MessagingException
 import org.mule.transport.NullPayload
+import com.cedarsoftware.util.io.GroovyJsonWriter
+import com.cedarsoftware.util.io.GroovyJsonReader
 
 class MessageProcessorInfoLoggers {
 	
@@ -12,18 +15,12 @@ class MessageProcessorInfoLoggers {
 			def inspectedPayload = payload.inspect()
 			return "return $inspectedPayload"
 		} else {
-			 def jsonPayload = new JsonBuilder( payload ).toString()
-			 def payloadClassName = payload.getClass().getName()
-			 System.out.println payload.inspect()
-			 return """import groovy.json.*;
-	import $payloadClassName;
+			 def jsonPayload = GroovyJsonWriter.objectToJson(payload, [(GroovyJsonWriter.PRETTY_PRINT):true])
+			 return """import com.cedarsoftware.util.io.GroovyJsonReader
+	
+	def result = GroovyJsonReader.jsonToGroovy('''$jsonPayload''')
 
-	def resultMap = new JsonSlurper().
-			 	setType(JsonParserType.INDEX_OVERLAY).
-			 			setCheckDates(true).
-			 				parseText( '$jsonPayload' )
-
-	return new $payloadClassName( resultMap )"""
+	return result"""
 		}
 	}
 	
@@ -53,10 +50,32 @@ class MessageProcessorInfoLoggers {
 	public static String logXML(MessageProcessorInfo mpInfo) {
 		
 		def messageProcessor = mpInfo.elementNamespace ? mpInfo.elementNamespace + ":" + mpInfo.elementName : mpInfo.elementName
-		def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "PayloadGenerator"
-		def scriptContent = serializeToScript(mpInfo.payload)
 		
-		return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
+		if (mpInfo.exceptionThrown != null) {
+			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "ExceptionGenerator"
+			def exception = mpInfo.exceptionThrown
+			if (exception instanceof MessagingException) {
+				exception = mpInfo.exceptionThrown.getCauseException()
+			}
+			def scriptContent = serializeToScript(exception)
+			
+			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
+<script:script name="$scriptName" engine="groovy"><![CDATA[
+  $scriptContent]]>
+</script:script>
+
+<mock:throw-an whenCalling="$messageProcessor" doc:name="Mock $mpInfo.docName" exception-ref="#[resultOfScript('$scriptName')]">
+	 <mock:with-attributes>
+		  <mock:with-attribute name="doc:name" whereValue="#['$mpInfo.docName']"/>
+	 </mock:with-attributes>
+</mock:throw-an>
+
+<<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
+		} else {
+			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "PayloadGenerator"			
+			def scriptContent = serializeToScript(mpInfo.payload)
+			
+			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 <script:script name="$scriptName" engine="groovy"><![CDATA[
   $scriptContent]]>
 </script:script>
@@ -69,6 +88,8 @@ class MessageProcessorInfoLoggers {
 </mock:when>
 
 <<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
+		}
+
 	}
 
 }

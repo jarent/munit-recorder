@@ -25,7 +25,7 @@ class MessageProcessorInfoBuilder {
 		} else if (mp instanceof AnnotatedObject && mp?.getAnnotations().size() > 0) {
 			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
 		} else if (mp instanceof OperationMessageProcessor) {
-			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName());
+			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName())
 		} else {
 			throw new IllegalStateException('No annotations nor CGLIB$CALLBACK_0 - ' + mp.getClass().getName());
 		}
@@ -41,6 +41,12 @@ class MessageProcessorInfoBuilder {
 		mpInfo.variables = variables
 		return this
 	}
+	
+	public MessageProcessorInfoBuilder withExceptionThrown(def exceptionThrown) {
+		mpInfo.exceptionThrown = exceptionThrown
+		return this
+	}
+	
 	
 	public MessageProcessorInfo build() {
 		return mpInfo
