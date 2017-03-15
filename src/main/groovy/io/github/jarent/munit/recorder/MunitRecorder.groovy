@@ -38,7 +38,7 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 					
 					def logMethod = MessageProcessorInfoLoggers.&"$logMethodName"
 					
-					recorderLog.info(logMethod(mpInfo))
+					recorderLog.debug(logMethod(mpInfo))
 					
 				}
 				

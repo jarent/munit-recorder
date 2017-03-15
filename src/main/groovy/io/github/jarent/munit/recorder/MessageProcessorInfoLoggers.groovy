@@ -60,9 +60,9 @@ class MessageProcessorInfoLoggers {
 			def scriptContent = serializeToScript(exception)
 			
 			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
-<script:script name="$scriptName" engine="groovy"><![CDATA[
+<scripting:script name="$scriptName" engine="groovy"><![CDATA[
   $scriptContent]]>
-</script:script>
+</scripting:script>
 
 <mock:throw-an whenCalling="$messageProcessor" doc:name="Mock $mpInfo.docName" exception-ref="#[resultOfScript('$scriptName')]">
 	 <mock:with-attributes>
@@ -76,9 +76,9 @@ class MessageProcessorInfoLoggers {
 			def scriptContent = serializeToScript(mpInfo.payload)
 			
 			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
-<script:script name="$scriptName" engine="groovy"><![CDATA[
+<scripting:script name="$scriptName" engine="groovy"><![CDATA[
   $scriptContent]]>
-</script:script>
+</scripting:script>
 
 <mock:when messageProcessor="$messageProcessor" doc:name="Mock $mpInfo.docName">
 	 <mock:with-attributes>
