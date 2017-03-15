@@ -5,6 +5,7 @@ import org.mule.api.MessagingException
 import org.mule.transport.NullPayload
 import com.cedarsoftware.util.io.GroovyJsonWriter
 import com.cedarsoftware.util.io.GroovyJsonReader
+import org.mule.config.ExceptionHelper
 
 class MessageProcessorInfoLoggers {
 	
@@ -54,8 +55,8 @@ class MessageProcessorInfoLoggers {
 		if (mpInfo.exceptionThrown != null) {
 			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "ExceptionGenerator"
 			def exception = mpInfo.exceptionThrown
-			if (exception instanceof MessagingException) {
-				exception = mpInfo.exceptionThrown.getCauseException()
+			if (exception instanceof MessagingException && ExceptionHelper.getRootException(exception) != null) {
+				exception = ExceptionHelper.getRootException(exception)
 			}
 			def scriptContent = serializeToScript(exception)
 			
