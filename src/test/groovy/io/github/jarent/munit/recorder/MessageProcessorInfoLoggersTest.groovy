@@ -66,9 +66,9 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		System.err.println logXML(mpInfo) 
 		
 		logXML(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
-<script:script name="mockTestNamePayloadGenerator" engine="groovy"><![CDATA[
+<scripting:script name="mockTestNamePayloadGenerator" engine="groovy"><![CDATA[
   return 'Sample payload']]>
-</script:script>
+</scripting:script>
 
 <mock:when messageProcessor="http:request" doc:name="Mock Test Name">
 	 <mock:with-attributes>
