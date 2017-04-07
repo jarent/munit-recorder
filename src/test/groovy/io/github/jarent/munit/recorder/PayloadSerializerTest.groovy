@@ -1,11 +1,10 @@
 package io.github.jarent.munit.recorder
 
+import com.cedarsoftware.util.io.GroovyJsonReader
+
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
-import com.cedarsoftware.util.io.GroovyJsonReader
-
-import groovy.ui.text.FindReplaceUtility.ReplaceAllAction
 
 
 class PayloadSerializerTest extends Specification {
@@ -74,6 +73,7 @@ class PayloadSerializerTest extends Specification {
 		exception.getClass().getName() == result.getClass().getName()
 		exception.getMessage() == result.getMessage()
 	}
+	
 	
 	@Ignore
 	def "Should Deserialize Complex Exception"() {
