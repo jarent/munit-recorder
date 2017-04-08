@@ -31,12 +31,7 @@ class MunitRecorderHelper {
 		//TODO - couldn't use XmlSlurper nor XmlParser - have to declare namespace upfront - right now parsing using regex...
 		def group = (sourceElement =~ /<([\w-]+:)?([\w-]+).+/)
 		
-		if 	(group.size() > 1) {
-			return ['namespace': group[1][1][0..-2],
-					'name': group[1][2]
-				   ]
-			
-		} else  if (group.size() == 1) {
+		if (group.size() >= 1) {
 			return ['namespace': (group[0][1] != null ? group[0][1][0..-2] : null),
 					'name': group[0][2]
 				   ]

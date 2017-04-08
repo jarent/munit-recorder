@@ -19,7 +19,7 @@ class MunitRecorderHelperTest  extends Specification {
 		
 		then:
 		elementNameAndNamespace.namespace == 'http'
-		elementNameAndNamespace.name == 'request-builder'
+		elementNameAndNamespace.name == 'request'
 	}
 	
 	public void shouldRecognizeNamespaceAndElementNameFromFlow() {
@@ -45,6 +45,24 @@ class MunitRecorderHelperTest  extends Specification {
 		
 		elementNameAndNamespace.namespace == 'munit'
 		elementNameAndNamespace.name== 'set'
+		
+	}
+	
+	public void shouldRecognizeElementNameFromScatterGather() {
+		when:
+		
+		def elementName = MunitRecorderHelper.getElementNameAndNamespace('''<scatter-gather doc:name="Scatter-Gather">
+<processor-chain doc:name="Processor Chain">
+<logger message="Upper path" level="INFO" doc:name="Logger"></logger>
+</processor-chain>
+<processor-chain doc:name="Processor Chain">
+<logger message="Lower path" level="INFO" doc:name="Logger"></logger>
+</processor-chain>
+</scatter-gather>''')
+
+	   then:
+		   elementName.name == 'scatter-gather'
+		   elementName.namespace == null
 		
 	}
 	
