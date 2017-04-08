@@ -8,6 +8,7 @@ import org.mule.munit.common.endpoint.MockOutboundEndpoint
 import org.mule.munit.common.processor.interceptor.MunitMessageProcessorInterceptor
 import org.mule.munit.common.processor.interceptor.WrapperMunitMessageProcessorInterceptor
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper
+import org.mule.processor.chain.InterceptingChainLifecycleWrapper
 
 
 class MessageProcessorInfoBuilder {
@@ -26,7 +27,10 @@ class MessageProcessorInfoBuilder {
 			}			
 		} else if (mp instanceof AnnotatedObject && mp?.getAnnotations().size() > 0) {
 			fillMessageProcessorInfoFromAnnotations((AnnotatedObject)mp)
-		} else if (mp instanceof OperationMessageProcessor || mp instanceof SubflowInterceptingChainLifecycleWrapper || mp instanceof MockOutboundEndpoint ) {
+		} else if (mp instanceof OperationMessageProcessor || 
+				   mp instanceof SubflowInterceptingChainLifecycleWrapper || 
+				   mp instanceof MockOutboundEndpoint ||
+				   mp instanceof InterceptingChainLifecycleWrapper) {
 			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName())
 		} else if (mp.getClass().getName().contains("org.mule.config.spring.factories.FlowRefFactoryBean") ) {
 			throw new UnsupportedOperationException("Cant't read metadata from " + mp.getClass().getName())
