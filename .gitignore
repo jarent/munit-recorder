@@ -11,3 +11,5 @@ buildNumber.properties
 .mvn/timing.properties
 .project
 .DS_Store
+.idea/
+munit-recorder.iml

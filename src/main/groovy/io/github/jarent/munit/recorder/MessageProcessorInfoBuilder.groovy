@@ -57,6 +57,13 @@ class MessageProcessorInfoBuilder {
 	
 	
 	public MessageProcessorInfo build() {
+		if (mpInfo.docName == null) {
+			mpInfo.with {
+				//if docName is null, set if with namescpae and name
+				docName = (elementNamespace != null ? elementNamespace + "_" : "") + elementName
+				fakeDocName = true
+			}
+		}
 		return mpInfo
 	}
 	
@@ -75,9 +82,6 @@ class MessageProcessorInfoBuilder {
 		mpInfo.elementNamespace = elementNameAndNamespace.namespace
 		mpInfo.elementName = elementNameAndNamespace.name
 		
-		if (mpInfo.docName == null) {
-			mpInfo.docName = mpInfo.elementNamespace + "_" + mpInfo.elementName
-		}
 	}
 	
 	private void fillMessageProcessorInfoFromCallback(def mp) {

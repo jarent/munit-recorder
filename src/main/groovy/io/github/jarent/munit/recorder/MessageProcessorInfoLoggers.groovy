@@ -58,6 +58,14 @@ class MessageProcessorInfoLoggers {
 		
 		def messageProcessor = mpInfo.elementNamespace ? mpInfo.elementNamespace + ":" + mpInfo.elementName : mpInfo.elementName
 		
+		def docNameAttributeCondition = """ <mock:with-attributes>
+		  <mock:with-attribute name="doc:name" whereValue="#['$mpInfo.docName']"/>
+	 </mock:with-attributes>"""
+		
+		if (mpInfo.fakeDocName) {
+			docNameAttributeCondition = """<!-- WARNING: Message processor doesn't have doc:name filled -->"""
+		} 
+		
 		if (mpInfo.exceptionThrown != null) {
 			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "ExceptionGenerator"
 			def exception = mpInfo.exceptionThrown
@@ -72,9 +80,7 @@ class MessageProcessorInfoLoggers {
 </scripting:script>
 
 <mock:throw-an whenCalling="$messageProcessor" doc:name="Mock $mpInfo.docName" exception-ref="#[resultOfScript('$scriptName')]">
-	 <mock:with-attributes>
-		  <mock:with-attribute name="doc:name" whereValue="#['$mpInfo.docName']"/>
-	 </mock:with-attributes>
+	 $docNameAttributeCondition
 </mock:throw-an>
 
 <<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
@@ -88,9 +94,7 @@ class MessageProcessorInfoLoggers {
 </scripting:script>
 
 <mock:when messageProcessor="$messageProcessor" doc:name="Mock $mpInfo.docName">
-	 <mock:with-attributes>
-		  <mock:with-attribute name="doc:name" whereValue="#['$mpInfo.docName']"/>
-	 </mock:with-attributes>
+	 $docNameAttributeCondition
 	 <mock:then-return payload="#[resultOfScript('$scriptName')]"/>
 </mock:when>
 

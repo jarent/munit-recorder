@@ -9,4 +9,5 @@ public class MessageProcessorInfo {
 		Object payload
 		List variables
 		Throwable exceptionThrown
+		boolean fakeDocName = false
 }
