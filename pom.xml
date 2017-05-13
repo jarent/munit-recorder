@@ -3,7 +3,7 @@
 
 	<groupId>io.github.jarent</groupId>
 	<artifactId>munit-recorder</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -216,6 +216,5 @@
 		<connection>scm:git:git://github.com/jarent/munit-recorder.git</connection>
 		<developerConnection>scm:git:https://github.com/jarent/munit-recorder.git</developerConnection>
 		<url>http://github.com/jarent/munit-recorder/tree/master</url>
-    <tag>munit-recorder-0.0.2</tag>
   </scm>
 </project>
