@@ -5,13 +5,12 @@ Helper tool for automatic [Munit](https://docs.mulesoft.com/munit/) mocks defini
 
 ### Install
 
-1. Download the project from [github repo](https://github.com/jarent/munit-recorder/archive/master.zip) and build it using maven (jar is not upload to any maven repo yet)
-1. Add to project's pom.xml the dependency:
+Add to project's pom.xml the dependency:
 ``` xml
 <dependency>
    <groupId>io.github.jarent</groupId>
    <artifactId>munit-recorder</artifactId>
-   <version>0.0.1-SNAPSHOT</version>
+   <version>0.0.4</version>
  </dependency>
 ```
 
