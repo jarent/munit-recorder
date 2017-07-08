@@ -9,31 +9,21 @@ import org.mule.config.ExceptionHelper
 
 class MessageProcessorInfoLoggers {
 	
-	public static String serializeToScript(payload) {
-		if (payload instanceof NullPayload) {
-			return "return null"
-		} else if (payload instanceof String || payload instanceof Number) {
-			def inspectedPayload = payload.inspect()
-			return "return $inspectedPayload"
-		} else {
-			try {
-				def jsonPayload = GroovyJsonWriter.objectToJson(payload, [(GroovyJsonWriter.PRETTY_PRINT):true])
-			
-			 return """import com.cedarsoftware.util.io.GroovyJsonReader
 	
-	def result = GroovyJsonReader.jsonToGroovy('''$jsonPayload''')
-
-	return result"""
-			} catch (StackOverflowError e){
-				  def payloadClass = payload.getClass().getName()
-				  return """return '$payloadClass is not supported by serialization'"""
-			}
-		}
+	private boolean serializeIterator;
+	
+	private PayloadSerializerFactory psFactory;
+	
+	public MessageProcessorInfoLoggers(boolean serializeIterator) {
+		this.serializeIterator=serializeIterator
+		psFactory = new PayloadSerializerFactory()
 	}
 	
+	public MessageProcessorInfoLoggers() {
+		this(true);
+	}
 	
-	
-	public static String logJSON(MessageProcessorInfo mpInfo) {
+	public String logJSON(MessageProcessorInfo mpInfo) {
 		
 		return new groovy.json.JsonBuilder(mpInfo).toString()
 		
@@ -41,7 +31,7 @@ class MessageProcessorInfoLoggers {
 	
 	
 	
-	public static String logGroovy(MessageProcessorInfo mpInfo) {
+	public String logGroovy(MessageProcessorInfo mpInfo) {
 		
 		return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -54,7 +44,7 @@ class MessageProcessorInfoLoggers {
 		
 	}
 	
-	public static String logXML(MessageProcessorInfo mpInfo) {
+	public String logXML(MessageProcessorInfo mpInfo) {
 		
 		def messageProcessor = mpInfo.elementNamespace ? mpInfo.elementNamespace + ":" + mpInfo.elementName : mpInfo.elementName
 		
@@ -66,13 +56,18 @@ class MessageProcessorInfoLoggers {
 			docNameAttributeCondition = """<!-- WARNING: Message processor doesn't have doc:name filled -->"""
 		} 
 		
-		if (mpInfo.exceptionThrown != null) {
+		if (mpInfo.payload instanceof Iterator && !serializeIterator) {
+			
+			def iteratorClassName = mpInfo.payload.getClass().getName();
+			return "Iterator Serialization disabled. Payload $iteratorClassName from $messageProcessor not mocked"
+			
+		} else if (mpInfo.exceptionThrown != null) {
 			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "ExceptionGenerator"
 			def exception = mpInfo.exceptionThrown
 			if (exception instanceof MessagingException && ExceptionHelper.getRootException(exception) != null) {
 				exception = ExceptionHelper.getRootException(exception)
 			}
-			def scriptContent = serializeToScript(exception)
+			def scriptContent = psFactory.serializeToScript(exception)
 			
 			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 <scripting:script name="$scriptName" engine="groovy"><![CDATA[
@@ -86,7 +81,7 @@ class MessageProcessorInfoLoggers {
 <<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
 		} else {
 			def scriptName = 'mock' + mpInfo.docName.tokenize().join('') + "PayloadGenerator"			
-			def scriptContent = serializeToScript(mpInfo.payload)
+			def scriptContent = psFactory.serializeToScript(mpInfo.payload)
 			
 			return """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 <scripting:script name="$scriptName" engine="groovy"><![CDATA[

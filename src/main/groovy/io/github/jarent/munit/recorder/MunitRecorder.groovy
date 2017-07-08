@@ -32,11 +32,14 @@ class MunitRecorder implements MessageProcessorNotificationListener<MessageProce
 				
 				if (mpNotification.action == 									  
 				(ACTION_MAP[mpNotification.getSource().getMuleContext().getRegistry().get("munit.recorder.action")] ?: mpNotification.action)) {
-													  	
+					
+					String serializeIteratorOption = mpNotification.getSource().getMuleContext().getRegistry().get("munit.recorder.serializeIterator") ?: "true"
 				
 					def logMethodName = mpNotification.getSource().getMuleContext().getRegistry().get("munit.recorder.logMethod") ?: "logXML"
 					
-					def logMethod = MessageProcessorInfoLoggers.&"$logMethodName"
+					def mpInfoLogers = new MessageProcessorInfoLoggers(serializeIteratorOption.toBoolean())
+					
+					def logMethod = mpInfoLogers.&"$logMethodName"
 					
 					recorderLog.debug(logMethod(mpInfo))
 					

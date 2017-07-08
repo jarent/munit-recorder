@@ -13,7 +13,7 @@ class PayloadSerializerTest extends Specification {
 	def "should #useCase"() {
 		expect: 'payload serialized to script'
 		
-			String script = MessageProcessorInfoLoggers.serializeToScript(payload)
+			String script = new PayloadSerializerFactory().serializeToScript(payload)
 			
 			Eval.me(script) == payload
 		
@@ -33,7 +33,7 @@ class PayloadSerializerTest extends Specification {
 		def payload = new Root([first:'1', second:2, third:new Date()])
 		
 		when:
-		String script = MessageProcessorInfoLoggers.serializeToScript(payload)
+		String script = new PayloadSerializerFactory().serializeToScript(payload)
 		
 		def result = Eval.me(script)
 		
@@ -48,7 +48,7 @@ class PayloadSerializerTest extends Specification {
 		def payload = ['date': new Date(), '1':0.90]
 		
 		when:
-		String script = MessageProcessorInfoLoggers.serializeToScript(payload)
+		String script = new PayloadSerializerFactory().serializeToScript(payload)
 		
 		def result = Eval.me(script)
 		
@@ -65,13 +65,27 @@ class PayloadSerializerTest extends Specification {
 		//String script = GroovyJsonWriter.objectToJson(exception)
 		//def obj = GroovyJsonReader.jsonToGroovy(script)
 		
-		String script = MessageProcessorInfoLoggers.serializeToScript(exception)
+		String script = new PayloadSerializerFactory().serializeToScript(exception)
 		
 		def result = Eval.me(script)
 		
 		then:
 		exception.getClass().getName() == result.getClass().getName()
 		exception.getMessage() == result.getMessage()
+	}
+	
+	def "Should Serialize Iterator"() {
+		given:
+		def payload = [1,2,3,4,5]
+		
+		when:
+		
+		String script = new PayloadSerializerFactory().serializeToScript(payload.iterator())
+		
+		def result = Eval.me(script)
+		
+		then:
+		result.toList() == payload
 	}
 	
 	

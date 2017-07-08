@@ -2,12 +2,11 @@ package io.github.jarent.munit.recorder
 
 import org.junit.Test
 
-import static io.github.jarent.munit.recorder.MessageProcessorInfoLoggers.*
-
-
 import spock.lang.Specification;
 
 class MessageProcessorInfoLoggersTest  extends Specification {
+	
+	private MessageProcessorInfoLoggers mpInfoLoggers = new MessageProcessorInfoLoggers();
 	
 	@Test
 	public void shouldLogJson() {
@@ -22,7 +21,7 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		
 		then:
 		
-		logJSON(mpInfo) == '{"fakeDocName":false,"docName":"Test Name","elementName":"request","exceptionThrown":null,"elementNamespace":"http","variables":[{"name":"var","value":"test"}],"payload":"Sample payload"}'
+		mpInfoLoggers.logJSON(mpInfo) == '{"fakeDocName":false,"docName":"Test Name","elementName":"request","exceptionThrown":null,"elementNamespace":"http","variables":[{"name":"var","value":"test"}],"payload":"Sample payload"}'
 		
 	}
 	
@@ -40,7 +39,7 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		mpInfo.variables = [['name':'var', 'value':'test']]
 		
 		then:
-		logGroovy(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
+		mpInfoLoggers.logGroovy(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 
 		whenMessageProcessor("request").ofNamespace("http").
 		withAttributes(['doc:name': 'Test Name']).thenReturn(
@@ -63,9 +62,9 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		
 		then:
 		
-		System.err.println logXML(mpInfo) 
+		System.err.println mpInfoLoggers.logXML(mpInfo) 
 		
-		logXML(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
+		mpInfoLoggers.logXML(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 <scripting:script name="mockTestNamePayloadGenerator" engine="groovy"><![CDATA[
   return 'Sample payload']]>
 </scripting:script>
@@ -93,7 +92,7 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		
 		then:
 		
-		System.err.println logXML(mpInfo)
+		System.err.println mpInfoLoggers.logXML(mpInfo)
 		
 	}
 	
@@ -110,9 +109,9 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 		
 		then:
 		
-		System.err.println logXML(mpInfo)
+		System.err.println mpInfoLoggers.logXML(mpInfo)
 		
-		logXML(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
+		mpInfoLoggers.logXML(mpInfo) == """>>>>>>>>>>>>>>>>>>> MOCK START >>>>>>>>>>>>>>>>>>>>>>>>
 <scripting:script name="mockhttp_requestPayloadGenerator" engine="groovy"><![CDATA[
   return 'Sample payload']]>
 </scripting:script>
@@ -123,6 +122,24 @@ class MessageProcessorInfoLoggersTest  extends Specification {
 </mock:when>
 
 <<<<<<<<<<<<<<<<<<< MOCK END <<<<<<<<<<<<<<<<<<<<<<<<"""
+	}
+	
+	@Test
+	public void shouldPrintInfoWhenIteratorSerializationDisabled() {
+		when:
+		MessageProcessorInfo mpInfo = new MessageProcessorInfo()
+		
+		mpInfo.docName = "http_request"
+		mpInfo.elementName = "request"
+		mpInfo.elementNamespace = "http"
+		mpInfo.payload = [1,2,3,4,5].iterator();
+		mpInfo.fakeDocName = true
+		
+		then:
+		
+		new MessageProcessorInfoLoggers(false).logXML(mpInfo) == 'Iterator Serialization disabled. Payload java.util.ArrayList$Itr from http:request not mocked'
+		
+		
 	}
 
 }
