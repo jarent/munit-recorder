@@ -55,7 +55,7 @@ Sample generated mock declaration for Salesforce 'query-single' message processo
 </mock:when>
 ```
 
-Copy-paste generated elements to your munit test config flow xml. 'scripting:script' portion must be defined in global elements, while 'mock:when' within 'munit:test' element:
+Copy-paste generated elements to your munit test config flow xml. *'scripting:script'* portion must be defined in global elements, while *'mock:when'* within *'munit:test'* element:
 
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -76,3 +76,14 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
     </munit:test>
 </mule>
 ```
+
+### Options
+
+Output from 'munit-record' can be customized using global properties. You can provide the values directly in the munit configuration flow, for example:
+
+``` xml
+    <global-property value="true" name="munit.recorder.serializeIterator" />
+```    
+
+Available options:
+* *munit.recorder.serializeIterator* (true|false) - turn on/off iterator serializations. Iterator can be read only once, so if message processor returns iterator then munit-recorder will read it in order to serialize payload. After that next steps in the flow will see empty data. The workaround is to capture iterator content, then mock it and turn off iterator serialization. Option added as fix for [#12](/../../issues/12)
