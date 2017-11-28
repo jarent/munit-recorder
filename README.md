@@ -10,7 +10,7 @@ Add to project's pom.xml the dependency:
 <dependency>
    <groupId>io.github.jarent</groupId>
    <artifactId>munit-recorder</artifactId>
-   <version>0.0.4</version>
+   <version>0.0.5</version>
  </dependency>
 ```
 
